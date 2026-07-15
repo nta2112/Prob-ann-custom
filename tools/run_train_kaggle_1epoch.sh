@@ -10,10 +10,10 @@ export WANDB_MODE=disabled
 #   Batch size: 4 (mỗi GPU)
 
 CKPT_DIR=${1:-"/kaggle/input/prob-checkpoints"}
-BATCH_SIZE=${2:-4}
+BATCH_SIZE=${2:-2}
 DATA_ROOT="/kaggle/working/datasets/IP102"
 EXP_DIR="/kaggle/working/exps/IP102"
-NUM_WORKERS=2
+NUM_WORKERS=1
 
 # Tự động tìm thư mục chứa checkpoint nếu không tìm thấy t1.pth ở đường dẫn mặc định
 if [ ! -d "${CKPT_DIR}" ] || [ ! -f "${CKPT_DIR}/t1.pth" ]; then
