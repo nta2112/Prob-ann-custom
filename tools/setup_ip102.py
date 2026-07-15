@@ -149,7 +149,14 @@ def convert_to_voc(json_path, split_name, output_dir, image_path_map, class_name
         mapped_anns = []
         for ann in img_anns:
             mapped_ann = ann.copy()
-            mapped_ann['category_id'] = category_id_to_idx[ann['category_id']]
+            cat_id = ann['category_id']
+            if cat_id in category_id_to_idx:
+                mapped_ann['category_id'] = category_id_to_idx[cat_id]
+            else:
+                if 0 <= cat_id < len(class_names):
+                    mapped_ann['category_id'] = cat_id
+                else:
+                    mapped_ann['category_id'] = 0
             mapped_anns.append(mapped_ann)
             
         write_voc_xml(anno_dir, base_name, width, height, mapped_anns, class_names)
