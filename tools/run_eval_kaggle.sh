@@ -14,6 +14,19 @@ BATCH_SIZE=${2:-8}
 DATA_ROOT="/kaggle/working/datasets/IP102"
 NUM_WORKERS=2
 
+# Tự động tìm thư mục chứa checkpoint nếu không tìm thấy t1.pth ở đường dẫn mặc định
+if [ ! -d "${CKPT_DIR}" ] || [ ! -f "${CKPT_DIR}/t1.pth" ]; then
+    echo "Warning: Checkpoint directory '${CKPT_DIR}' or '${CKPT_DIR}/t1.pth' not found."
+    echo "Searching for t1.pth in /kaggle/input..."
+    FOUND_PATH=$(find /kaggle/input -name "t1.pth" -print -quit 2>/dev/null)
+    if [ -n "${FOUND_PATH}" ]; then
+        CKPT_DIR=$(dirname "${FOUND_PATH}")
+        echo "Found checkpoint directory: ${CKPT_DIR}"
+    else
+        echo "Could not find t1.pth in /kaggle/input. Proceeding with default."
+    fi
+fi
+
 echo "============================================="
 echo "BẮT ĐẦU ĐÁNH GIÁ MÔ HÌNH PROB TRÊN KAGGLE (2 GPU)"
 echo "Checkpoints Directory: ${CKPT_DIR}"
