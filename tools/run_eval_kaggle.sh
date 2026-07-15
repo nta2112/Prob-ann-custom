@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Vô hiệu hóa wandb để tránh việc yêu cầu đăng nhập tương tác gây kẹt tiến trình
+export WANDB_MODE=disabled
+
 # Kịch bản chạy đánh giá mô hình PROB với tập dữ liệu IP102 trên Kaggle dùng 2 GPU.
 # Sử dụng: bash tools/run_eval_kaggle.sh <đường_dẫn_thư_mục_chứa_checkpoints> <batch_size_mỗi_gpu>
 # Mặc định:
@@ -16,6 +19,7 @@ echo "BẮT ĐẦU ĐÁNH GIÁ MÔ HÌNH PROB TRÊN KAGGLE (2 GPU)"
 echo "Checkpoints Directory: ${CKPT_DIR}"
 echo "Batch Size per GPU: ${BATCH_SIZE}"
 echo "Data Root: ${DATA_ROOT}"
+echo "W&B Mode: ${WANDB_MODE}"
 echo "============================================="
 
 # ----------------- TASK 1 -----------------
@@ -35,7 +39,7 @@ python -m torch.distributed.run --nproc_per_node=2 --master_port=29505 main_open
     --num_workers ${NUM_WORKERS} \
     --pretrain "${CKPT_DIR}/t1.pth" \
     --data_root ${DATA_ROOT} \
-    --eval
+    --eval --wandb_project ""
 
 # ----------------- TASK 2 -----------------
 echo ">>> [TASK 2] Đánh giá trên Lớp 1 - 52 (Thêm 25 Classes)"
@@ -54,7 +58,7 @@ python -m torch.distributed.run --nproc_per_node=2 --master_port=29506 main_open
     --num_workers ${NUM_WORKERS} \
     --pretrain "${CKPT_DIR}/t2.pth" \
     --data_root ${DATA_ROOT} \
-    --eval
+    --eval --wandb_project ""
 
 # ----------------- TASK 3 -----------------
 echo ">>> [TASK 3] Đánh giá trên Lớp 1 - 77 (Thêm 25 Classes)"
@@ -73,7 +77,7 @@ python -m torch.distributed.run --nproc_per_node=2 --master_port=29507 main_open
     --num_workers ${NUM_WORKERS} \
     --pretrain "${CKPT_DIR}/t3.pth" \
     --data_root ${DATA_ROOT} \
-    --eval
+    --eval --wandb_project ""
 
 # ----------------- TASK 4 -----------------
 echo ">>> [TASK 4] Đánh giá trên Lớp 1 - 102 (Thêm 25 Classes)"
@@ -92,7 +96,7 @@ python -m torch.distributed.run --nproc_per_node=2 --master_port=29508 main_open
     --num_workers ${NUM_WORKERS} \
     --pretrain "${CKPT_DIR}/t4.pth" \
     --data_root ${DATA_ROOT} \
-    --eval
+    --eval --wandb_project ""
 
 echo "============================================="
 echo "QUÁ TRÌNH ĐÁNH GIÁ ĐÃ HOÀN THÀNH!"
