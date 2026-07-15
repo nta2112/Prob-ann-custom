@@ -110,8 +110,19 @@ class Backbone(BackboneBase):
             print("DINO resnet50")
             backbone = resnet50(pretrained=False, replace_stride_with_dilation=[False, False, dilation], norm_layer=norm_layer)
             if is_main_process():
-                state_dict = torch.load("models/dino_resnet50_pretrain.pth")
+                import os
+                ckpt_path = "models/dino_resnet50_pretrain.pth"
+                if not os.path.exists(ckpt_path):
+                    print(f"Downloading DINO ResNet-50 pre-trained weights to {ckpt_path}...")
+                    os.makedirs(os.path.dirname(ckpt_path), exist_ok=True)
+                    url = "https://dl.fbaipublicfiles.com/dino/dino_resnet50_pretrain/dino_resnet50_pretrain.pth"
+                    torch.hub.download_url_to_file(url, ckpt_path)
+                state_dict = torch.load(ckpt_path)
                 backbone.load_state_dict(state_dict, strict=False)
+            
+            # Wait for main process to finish downloading
+            if torch.distributed.is_initialized():
+                torch.distributed.barrier()
         assert name not in ('resnet18', 'resnet34'), "number of channels are hard coded"
         super().__init__(backbone, train_backbone, return_interm_layers)
         if dilation:
